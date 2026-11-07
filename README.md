@@ -4,7 +4,7 @@ Projet de groupe réalisé à la Wild Code School (octobre – novembre 2026), e
 
 **Outils :** SQL (MySQL) · modélisation en étoile · Power BI · Power Query · DAX
 
-![Page Ventes du tableau de bord](images/dashboard_ventes.jpg)
+![Page Ventes du tableau de bord](dashboard_ventes.jpg)
 
 ## Ma contribution
 
@@ -40,9 +40,9 @@ Un modèle en étoile avec **2 tables de faits** et **4 dimensions** :
 | `dim_employee` | commercial, bureau, territoire |
 | `dim_date` | année, trimestre, mois (créée dans Power Query pour s'actualiser automatiquement) |
 
-![Modèle de données dans Power BI](images/modele_powerbi.png)
+![Modèle de données dans Power BI](modele_powerbi.png)
 
-Le script de création et d'alimentation des tables est dans [`sql/modele_etoile.sql`](sql/modele_etoile.sql).
+Le script de création et d'alimentation des tables est dans [`modele_etoile.sql`](modele_etoile.sql).
 
 ## Exemples de mesures DAX
 
@@ -67,13 +67,13 @@ Une page par domaine, avec des filtres communs (année, trimestre, mois, territo
 
 | Finances | Ressources humaines |
 | --- | --- |
-| ![Page Finances](images/dashboard_finances.jpg) | ![Page Ressources humaines](images/dashboard_rh.jpg) |
+| ![Page Finances](dashboard_finances.jpg) | ![Page Ressources humaines](dashboard_rh.jpg) |
 
 | Logistique | Accueil |
 | --- | --- |
-| ![Page Logistique](images/dashboard_logistique.jpg) | ![Page d'accueil](images/dashboard_accueil.jpg) |
+| ![Page Logistique](dashboard_logistique.jpg) | ![Page d'accueil](dashboard_accueil.jpg) |
 
-La version complète est disponible en PDF : [`docs/tableau_de_bord.pdf`](docs/tableau_de_bord.pdf).
+La version complète est disponible en PDF : [`tableau_de_bord.pdf`](tableau_de_bord.pdf).
 
 ## Principaux enseignements
 
@@ -92,15 +92,16 @@ La version complète est disponible en PDF : [`docs/tableau_de_bord.pdf`](docs/t
 
 ## Contenu du dépôt
 
-| Dossier | Contenu |
+| Fichier | Contenu |
 | --- | --- |
-| `sql/` | Script SQL de création et d'alimentation du modèle en étoile |
-| `powerbi/` | Fichier Power BI du tableau de bord (.pbix) |
-| `docs/` | Tableau de bord complet en PDF |
-| `images/` | Captures du tableau de bord et schémas du modèle de données |
+| `modele_etoile.sql` | Script SQL de création et d'alimentation du modèle en étoile |
+| `Toys_and_Models_dashboard.pbix` | Fichier Power BI du tableau de bord |
+| `tableau_de_bord.pdf` | Tableau de bord complet en PDF |
+| `dashboard_*.jpg` | Captures des pages du tableau de bord |
+| `modele_powerbi.png`, `schema_etoile.png` | Schémas du modèle de données |
 
 ## Pour reproduire
 
 1. Charger la base `toys_and_models` dans MySQL (fournie par la Wild Code School, non incluse dans ce dépôt).
-2. Exécuter `sql/modele_etoile.sql` pour créer les tables de faits et de dimensions.
-3. Ouvrir `powerbi/Toys_and_Models_dashboard.pbix` dans Power BI Desktop et mettre à jour la connexion MySQL.
+2. Exécuter `modele_etoile.sql` pour créer les tables de faits et de dimensions.
+3. Ouvrir `Toys_and_Models_dashboard.pbix` dans Power BI Desktop et mettre à jour la connexion MySQL.
