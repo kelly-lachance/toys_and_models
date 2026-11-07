@@ -1,107 +1,112 @@
-# Toys & Models – Tableau de bord de pilotage
+# Toys & Models – Business Performance Dashboard
 
-Projet de groupe réalisé à la Wild Code School (octobre – novembre 2026), en équipe de 4 et en méthode Agile (5 sprints, Scrum et Kanban).
+🇬🇧 English version · 🇫🇷 [Version française](README.fr.md)
 
-**Outils :** SQL (MySQL) · modélisation en étoile · Power BI · Power Query · DAX
+Group project completed at Wild Code School (October – November 2026), in a team of 4 using Agile methods (5 sprints, Scrum and Kanban).
 
-![Page Ventes du tableau de bord](dashboard_ventes.jpg)
+**Tools:** SQL (MySQL) · star schema modeling · Power BI · Power Query · DAX
 
-## Ma contribution
+![Sales page of the dashboard](dashboard_ventes.jpg)
 
-- **Modèle en étoile** : conception complète (choix du grain, tables de faits et de dimensions, clés) et écriture du script SQL de création et d'alimentation des tables.
-- **Partie Ventes** : indicateurs de ventes et page Ventes du tableau de bord.
-- **Mesures DAX** : contribution à l'écriture des mesures utilisées dans le tableau de bord.
-- **Documentation** : rédaction et formalisation de la synthèse du projet (KPI, mesures DAX, choix de visualisation, enseignements, limites).
+*The dashboard, table names and DAX measures are in French, as the project was delivered to a French-speaking client.*
 
-## Le besoin
+## My contribution
 
-Toys & Models vend des modèles réduits à des revendeurs dans le monde entier. Ses données de ventes étaient enregistrées dans une base transactionnelle, mais jamais exploitées.
+- **Star schema**: full design (grain, fact and dimension tables, keys) and the SQL script that creates and loads the tables.
+- **Sales**: sales KPIs and the Sales page of the dashboard.
+- **DAX measures**: co-wrote the measures used across the dashboard.
+- **Documentation**: wrote the project summary (KPI definitions, DAX measures, visualization choices, insights, limitations).
 
-Le directeur, qui n'est pas informaticien, voulait **un tableau de bord dynamique, actualisable chaque matin**, pour piloter son entreprise. Sa demande a été traduite en **18 indicateurs** répartis sur 4 domaines : ventes, finance, logistique et ressources humaines.
+## The business need
 
-## La démarche
+Toys & Models sells scale models to retailers worldwide. Its sales data was stored in a transactional database but had never been analyzed.
 
-1. **Cadrage** : reformulation de la demande, priorisation des indicateurs, échanges avec la Product Owner pour lever les ambiguïtés.
-2. **Audit des données** : exploration d'une base MySQL non documentée, calcul des premiers KPI en vues SQL, rédaction d'un dictionnaire de KPI.
-3. **Modélisation** : construction d'un modèle en étoile directement dans la base SQL.
-4. **Tableau de bord** : import dans Power BI, mesures DAX, une page par domaine, filtres et interactions.
-5. **Contrôle qualité et restitution** : vérification croisée des chiffres, documentation, présentation orientée métier au directeur.
+The CEO, who has no technical background, wanted **a dynamic dashboard, refreshed every morning**, to run the business. We translated his request into **18 KPIs** across 4 areas: sales, finance, logistics and human resources.
 
-## Le modèle de données
+## Approach
 
-Un modèle en étoile avec **2 tables de faits** et **4 dimensions** :
+1. **Scoping**: reframing the request, prioritizing the KPIs, and clarifying ambiguities with the Product Owner.
+2. **Data audit**: exploring an undocumented MySQL database, computing the first KPIs as SQL views, and writing a KPI dictionary.
+3. **Modeling**: building a star schema directly in the SQL database.
+4. **Dashboard**: loading the model into Power BI, writing DAX measures, one page per business area, with filters and interactions.
+5. **Quality check and delivery**: cross-checking the figures, documenting, and presenting business-oriented results to the CEO.
 
-| Table | Grain / contenu |
+## Data model
+
+A star schema with **2 fact tables** and **4 dimensions**:
+
+| Table | Grain / content |
 | --- | --- |
-| `fait_ventes` | 1 ligne = 1 produit d'une commande |
-| `fait_payment` | 1 ligne = 1 paiement client |
-| `dim_customers` | client, pays, limite de crédit |
-| `dim_produit` | produit, gamme, stock, prix d'achat |
-| `dim_employee` | commercial, bureau, territoire |
-| `dim_date` | année, trimestre, mois (créée dans Power Query pour s'actualiser automatiquement) |
+| `fait_ventes` (sales) | 1 row = 1 product in an order |
+| `fait_payment` (payments) | 1 row = 1 customer payment |
+| `dim_customers` | customer, country, credit limit |
+| `dim_produit` (products) | product, product line, stock, purchase price |
+| `dim_employee` | sales rep, office, territory |
+| `dim_date` | year, quarter, month (built in Power Query so it updates automatically) |
 
-![Modèle de données dans Power BI](modele_powerbi.png)
+![Data model in Power BI](modele_powerbi.png)
 
-Le script de création et d'alimentation des tables est dans [`modele_etoile.sql`](modele_etoile.sql).
+The script that creates and loads the tables is in [`modele_etoile.sql`](modele_etoile.sql).
 
-## Exemples de mesures DAX
+## Sample DAX measures
 
 ```dax
-CA = SUM(fait_ventes[chiffre_affaire])
+CA = SUM(fait_ventes[chiffre_affaire])                          -- revenue
 
 Prix achat = SUMX(fait_ventes, fait_ventes[quantityOrdered] * RELATED(dim_produit[buyPrice]))
-Marge = [CA] - [Prix achat]
-Taux marge = DIVIDE([Marge], [CA])
+Marge = [CA] - [Prix achat]                                     -- gross margin
+Taux marge = DIVIDE([Marge], [CA])                              -- margin rate
 
 Nb commande = DISTINCTCOUNT(fait_ventes[orderNumber])
-Panier moyen = DIVIDE([CA], [Nb commande])
+Panier moyen = DIVIDE([CA], [Nb commande])                      -- average order value
 
 Nb clients recurrents = COUNTROWS(FILTER(VALUES(fait_ventes[customerNumber]), [Nb commande] >= 2))
 Nb client actif = DISTINCTCOUNT(fait_ventes[customerNumber])
-Taux client recurrent = DIVIDE([Nb clients recurrents], [Nb client actif])
+Taux client recurrent = DIVIDE([Nb clients recurrents], [Nb client actif])   -- repeat customer rate
 ```
 
-## Aperçu du tableau de bord
+## Dashboard overview
 
-Une page par domaine, avec des filtres communs (année, trimestre, mois, territoire, bureau, client, catégorie, produit).
+One page per business area, with shared filters (year, quarter, month, territory, office, customer, product line, product).
 
-| Finances | Ressources humaines |
+| Finance | Human resources |
 | --- | --- |
-| ![Page Finances](dashboard_finances.jpg) | ![Page Ressources humaines](dashboard_rh.jpg) |
+| ![Finance page](dashboard_finances.jpg) | ![Human resources page](dashboard_rh.jpg) |
 
-| Logistique | Accueil |
+| Logistics | Home |
 | --- | --- |
-| ![Page Logistique](dashboard_logistique.jpg) | ![Page d'accueil](dashboard_accueil.jpg) |
+| ![Logistics page](dashboard_logistique.jpg) | ![Home page](dashboard_accueil.jpg) |
 
-La version complète est disponible en PDF : [`tableau_de_bord.pdf`](tableau_de_bord.pdf).
+The full dashboard is available as a PDF: [`tableau_de_bord.pdf`](tableau_de_bord.pdf).
 
-## Principaux enseignements
+## Key insights
 
-- **Une croissance de +30 % entre 2022 et 2023**, portée par l'Amérique du Nord et l'EMEA (84 % du CA). Seul le Japon recule (−43 %), à cause de la perte d'un client qui représentait plus de la moitié de son CA.
-- **40 % de marge brute.** Le produit le plus vendu est aussi l'un des plus chers et le plus rentable : les prix élevés ne freinent pas les ventes. 18 produits à fort CA ont pourtant une marge inférieure à 30 % : une piste de révision des prix ou des remises.
-- **97,7 % du CA encaissé**, mais une dépendance à quelques clients : un seul client représente 67 % du CA en Espagne.
-- **Une performance commerciale concentrée** : 3 commerciaux réalisent 31 % du CA, et 2 commerciaux n'ont aucun client affecté.
-- **Logistique** : 12 produits sous le seuil de stock critique, et un délai moyen de 4 jours entre la commande et l'expédition.
+- **+30% revenue growth between 2022 and 2023**, driven by North America and EMEA (84% of revenue). Only Japan declined (−43%), after losing a customer that accounted for more than half of its revenue.
+- **40% gross margin.** The best-selling product is also one of the most expensive and the most profitable: high prices do not hold back sales. Yet 18 high-revenue products have a margin below 30%, a lead for reviewing prices or discounts.
+- **97.7% of revenue collected**, but a dependence on a few customers: a single customer accounts for 67% of revenue in Spain.
+- **Concentrated sales performance**: 3 sales reps generate 31% of revenue, and 2 sales reps have no assigned customers.
+- **Logistics**: 12 products below the critical stock threshold, and an average of 4 days between order and shipment.
 
-## Limites identifiées
+## Limitations
 
-- Les paiements sont rattachés aux clients, pas aux commandes : les soldes et taux de recouvrement sont donc des **estimations**, et le délai de paiement n'a pas pu être calculé.
-- Les stocks ne sont mis à jour que tous les 2 mois : l'indicateur de stock est une alerte, pas un état en temps réel.
-- La base ne contient aucun objectif commercial : l'objectif a été fixé par hypothèse à CA de l'année précédente + 5 %.
-- 15 indicateurs sur 18 ont été livrés. Les 3 autres n'ont pas été présentés, notamment faute de lien entre paiements et commandes et de suivi des stocks en continu.
+- Payments are linked to customers, not to orders: customer balances and collection rates are therefore **estimates**, and payment delays could not be calculated.
+- Stock levels are only updated every 2 months: the stock indicator is an alert, not real-time status.
+- The database contains no sales targets: as an assumption, the target was set to the previous year's revenue + 5%.
+- 15 of the 18 KPIs were delivered. The other 3 were not included, mainly because payments are not linked to orders and stock is not tracked continuously.
 
-## Contenu du dépôt
+## Repository contents
 
-| Fichier | Contenu |
+| File | Content |
 | --- | --- |
-| `modele_etoile.sql` | Script SQL de création et d'alimentation du modèle en étoile |
-| `Toys_and_Models_dashboard.pbix` | Fichier Power BI du tableau de bord |
-| `tableau_de_bord.pdf` | Tableau de bord complet en PDF |
-| `dashboard_*.jpg` | Captures des pages du tableau de bord |
-| `modele_powerbi.png`, `schema_etoile.png` | Schémas du modèle de données |
+| `modele_etoile.sql` | SQL script that creates and loads the star schema |
+| `Toys_and_Models_dashboard.pbix` | Power BI dashboard file |
+| `tableau_de_bord.pdf` | Full dashboard as a PDF |
+| `dashboard_*.jpg` | Screenshots of the dashboard pages |
+| `modele_powerbi.png`, `schema_etoile.png` | Data model diagrams |
+| `README.fr.md` | French version of this README |
 
-## Pour reproduire
+## How to reproduce
 
-1. Charger la base `toys_and_models` dans MySQL (fournie par la Wild Code School, non incluse dans ce dépôt).
-2. Exécuter `modele_etoile.sql` pour créer les tables de faits et de dimensions.
-3. Ouvrir `Toys_and_Models_dashboard.pbix` dans Power BI Desktop et mettre à jour la connexion MySQL.
+1. Load the `toys_and_models` database into MySQL (provided by Wild Code School, not included in this repository).
+2. Run `modele_etoile.sql` to create the fact and dimension tables.
+3. Open `Toys_and_Models_dashboard.pbix` in Power BI Desktop and update the MySQL connection.
